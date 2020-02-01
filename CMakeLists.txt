@@ -3,4 +3,4 @@ project(3a_ecc_cpp)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(3a_ecc_cpp main.cpp src/UnsignedBigInteger.h)
+add_executable(3a_ecc_cpp main.cpp src/ecc/UnsignedBigInteger.cpp src/ecc/UnsignedBigInteger.h)

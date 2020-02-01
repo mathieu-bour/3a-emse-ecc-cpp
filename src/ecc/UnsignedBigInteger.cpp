@@ -1,6 +1,3 @@
-#ifndef UNSIGNED_BIG_INTEGER_H
-#define UNSIGNED_BIG_INTEGER_H
-
 #include <cstdint>
 #include <vector>
 #include <iostream>
@@ -11,7 +8,7 @@
 
 using std::size_t;
 
-namespace ECC {
+namespace ecc {
     /**
      * Arbitrary-long unsigned integers.
      * Heavily inspired by fffaraz's implementation of "Arbitrary-precision integer arithmetic in C++".
@@ -70,7 +67,7 @@ namespace ECC {
          * Direct increment operator. Uses the reference increment operator.
          * @return The incremented big integer.
          */
-        UnsignedBigInteger operator++(int) {
+        const UnsignedBigInteger operator++(int) {
             UnsignedBigInteger that(*this);
             ++(*this);
             return that;
@@ -100,7 +97,7 @@ namespace ECC {
          * Direct decrement operator. Uses the referenece decrement operator.
          * @return The decremented big integer.
          */
-        UnsignedBigInteger operator--(int) {
+        const UnsignedBigInteger operator--(int) {
             UnsignedBigInteger w(*this);
             --(*this);
             return w;
@@ -265,7 +262,8 @@ namespace ECC {
                 result.digits[bDigitIdx + aSize] = static_cast<Digit>(carry);
             }
 
-            result.trim();
+            result.trim(); // result was provisioned using the maximum digits
+
             return result;
         }
 
@@ -636,6 +634,4 @@ namespace ECC {
             }
         }
     };
-} // namespace ECC
-
-#endif // UNSIGNED_BIG_INTEGER_H
+}
