@@ -1,7 +1,20 @@
-#include "src/ecc/UnsignedBigInteger.cpp"
+#include "src/ecc/UnsignedBigInteger.h"
+#include "src/ecc/ModularUnsignedBigInteger.h"
 
-int main() {
-    ECC::UnsignedBigInteger a = ECC::UnsignedBigInteger("27580193559959705877849011840389048093056905856361568521428707301988689241309860865136260764883745107765439761230575");
-    std::cout << a * 2;
+using ecc::UnsignedBigInteger;
+using ecc::ModularUnsignedBigInteger;
+
+int main(int argc, char *argv[]) {
+    std::string aStr = std::string(argv[1]);
+    std::string bStr = std::string(argv[2]);
+    std::string modStr = std::string(argv[3]);
+
+    UnsignedBigInteger mod = UnsignedBigInteger(modStr);
+    ModularUnsignedBigInteger a = ModularUnsignedBigInteger(aStr, mod);
+    ModularUnsignedBigInteger b = ModularUnsignedBigInteger(bStr, mod);
+
+    std::cout << "A:" << a << std::endl
+              << "B:" << b << std::endl
+              << "A*B=" << a * b;
     return 0;
 }
