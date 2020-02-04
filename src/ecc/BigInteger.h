@@ -15,7 +15,13 @@ namespace ecc {
             value = pValue;
         }
 
-        BigInteger(Digit digit = 0, Sign pSign = 0) : value(UnsignedBigInteger(digit)), sign(pSign) {}
+        BigInteger(Digit digit = 0) {
+            if (digit == 0) {
+                sign = 0;
+            }
+
+            value = UnsignedBigInteger(digit);
+        }
 
 
         BigInteger(const std::string &str) : sign(1) {
@@ -42,6 +48,10 @@ namespace ecc {
             return value;
         }
 
+        bool operator==(Digit digit) const {
+            return value == digit;
+        }
+
         bool operator==(const BigInteger &other) const {
             return sign == other.sign && value == other.value;
         }
@@ -50,7 +60,10 @@ namespace ecc {
             return !(other == *this);
         }
 
-        BigInteger &operator=(const BigInteger &other) = default;
+        BigInteger &operator=(const BigInteger &other) {
+            sign = other.sign;
+            value = other.value;
+        }
 
 
         BigInteger &operator++() {

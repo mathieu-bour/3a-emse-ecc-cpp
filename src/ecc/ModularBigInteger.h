@@ -74,29 +74,53 @@ namespace ecc {
             return value;
         }
 
-        static UnsignedBigInteger euclidian(
+        static void euclidian(
+                const ModularBigInteger &a,
+                const ModularBigInteger &b,
+                BigInteger &pX,
+                BigInteger &pY,
+                UnsignedBigInteger &gcd
+        ) {
+            euclidian(a.value, b.value, pX, pY, gcd);
+        }
+
+        static void euclidian(
                 const UnsignedBigInteger &a,
                 const UnsignedBigInteger &b,
-                BigInteger &x,
-                BigInteger &y
+                BigInteger &pX,
+                BigInteger &pY,
+                UnsignedBigInteger &gcd
         ) {
-            // Base Case
-            if (a == 0) {
-                x = 0;
-                y = 1;
-                return b;
+            BigInteger x0 = 1, y0 = 0;
+            UnsignedBigInteger a0 = a;
+            BigInteger x1 = 0, y1 = 1;
+            UnsignedBigInteger a1 = b;
+
+            while (a1 != 0) {
+                UnsignedBigInteger q = a0 / a1;
+                UnsignedBigInteger a2 = a0 - q * a1;
+                if (a2 == 0) {
+                    x0 = x1;
+                    y0 = y1;
+                    a0 = a1;
+                    break;
+                }
+
+                BigInteger q2 = BigInteger(q);
+                BigInteger x2 = x0 - q2 * x1;
+                BigInteger y2 = y0 - q2 * y1;
+
+                x0 = x1;
+                y0 = y1;
+                a0 = a1;
+                x1 = x2;
+                y1 = y2;
+                a1 = a2;
             }
 
-            BigInteger x1, y1; // To store results of recursive call
-            UnsignedBigInteger gcd = euclidian(b % a, a, x1, y1);
-
-            // Update x and y using results of
-            // recursive call
-            BigInteger b_a = BigInteger(b / a);
-            x = y1 - b_a * x1;
-            y = x1;
-
-            return gcd;
+            pX = x0;
+            pY = y0;
+            gcd = a0;
         }
 
     private:

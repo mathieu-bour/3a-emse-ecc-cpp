@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "../../src/ecc/ModularBigInteger.h"
 
+using ecc::UnsignedBigInteger;
+using ecc::BigInteger;
 using ecc::ModularBigInteger;
 
 TEST(ModularBigInteger, addition) {
@@ -10,11 +12,11 @@ TEST(ModularBigInteger, addition) {
     EXPECT_EQ(c, a + b);
 
     a = ModularBigInteger("9538015219187306872831871770784093765052242936573",
-                              "16589398644410362140098972598872168730834157521659");
+                          "16589398644410362140098972598872168730834157521659");
     b = ModularBigInteger("9787826873359737738574143828680880048170382224558",
-                              "16589398644410362140098972598872168730834157521659");
+                          "16589398644410362140098972598872168730834157521659");
     c = ModularBigInteger("2736443448136682471307043000592805082388467639472",
-                              "16589398644410362140098972598872168730834157521659");
+                          "16589398644410362140098972598872168730834157521659");
     EXPECT_EQ(c, a + b);
 }
 
@@ -25,10 +27,22 @@ TEST(ModularBigInteger, subtraction) {
     EXPECT_EQ(c, a - b);
 
     a = ModularBigInteger("9538015219187306872831871770784093765052242936573",
-                              "16589398644410362140098972598872168730834157521659");
+                          "16589398644410362140098972598872168730834157521659");
     b = ModularBigInteger("9787826873359737738574143828680880048170382224558",
-                              "16589398644410362140098972598872168730834157521659");
+                          "16589398644410362140098972598872168730834157521659");
     c = ModularBigInteger("16339586990237931274356700540975382447716018233674",
-                              "16589398644410362140098972598872168730834157521659");
+                          "16589398644410362140098972598872168730834157521659");
     EXPECT_EQ(c, a - b);
+}
+
+TEST(ModularBigInteger, euclidian) {
+    ModularBigInteger a_m("12", "23");
+    ModularBigInteger b_m("17", "23");
+    BigInteger a = BigInteger(a_m.value);
+    BigInteger b = BigInteger(b_m.value);
+    BigInteger x, y;
+    UnsignedBigInteger gcd;
+
+    ModularBigInteger::euclidian(a_m, b_m, x, y, gcd);
+    EXPECT_EQ(BigInteger("1"), a * x + b * y);
 }
