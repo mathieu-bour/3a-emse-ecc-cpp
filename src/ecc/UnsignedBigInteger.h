@@ -21,8 +21,6 @@ namespace ecc {
      */
     class UnsignedBigInteger {
     public:
-        UnsignedBigInteger(std::vector<Digit> vector);
-
         typedef std::uint32_t Digit;
         typedef std::uint64_t Digit64;
         static const unsigned BITS = 32;
@@ -46,10 +44,6 @@ namespace ecc {
          */
         UnsignedBigInteger(const UnsignedBigInteger &copy) : digits(copy.digits) {
             // empty
-        }
-
-
-        UnsignedBigInteger(const std::vector<Digit> &pDigits) : digits(pDigits) {
         }
 
         /**

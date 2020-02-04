@@ -1,12 +1,21 @@
 #ifndef INC_3A_ECC_CPP_MODULARUNSIGNEDBIGINTEGER_H
 #define INC_3A_ECC_CPP_MODULARUNSIGNEDBIGINTEGER_H
 
+#include <map>
 #include "UnsignedBigInteger.h"
-#include "Montgomery.h"
 
 namespace ecc {
+    struct MontgomeryCache {
+        size_t k = 0;
+        UnsignedBigInteger n_p;
+        UnsignedBigInteger r;
+        UnsignedBigInteger r_p;
+    };
+
     class ModularUnsignedBigInteger : public UnsignedBigInteger {
     public:
+        UnsignedBigInteger modulus;
+
         ModularUnsignedBigInteger(UnsignedBigInteger &source, UnsignedBigInteger &pModulus) {
             digits = source.digits;
             modulus = pModulus;
@@ -31,11 +40,6 @@ namespace ecc {
             weakReduction();
         }
 
-        explicit operator UnsignedBigInteger() {
-            return UnsignedBigInteger(digits);
-        }
-
-
         /**
          * Addition assignment operator.
          * @param other The other big integer to add.
@@ -55,14 +59,35 @@ namespace ecc {
          * @return
          */
         friend ModularUnsignedBigInteger operator*(ModularUnsignedBigInteger a, const ModularUnsignedBigInteger &b) {
-            UnsignedBigInteger c = Montgomery::multiply(static_cast<UnsignedBigInteger>(a), b, a.modulus);
-            UnsignedBigInteger m = a.modulus;
-            return ModularUnsignedBigInteger(c, m);
+
         }
 
+        static void euclidian(
+            const UnsignedBigInteger &a,
+            const UnsignedBigInteger &b,
+            UnsignedBigInteger &pX,
+            UnsignedBigInteger &pY
+        ) {
+            UnsignedBigInteger x0 = 1, y0 = 0, a0 = a;
+            UnsignedBigInteger x1 = 0, y1 = 1, a1 = b;
 
+            while (a1 != 0) {
+                UnsignedBigInteger q = a0 / a1;
+                UnsignedBigInteger a2 = a0 - q * a1;
+                UnsignedBigInteger x2 = x0 - q * x1;
+                UnsignedBigInteger y2 = y0 - q * y1;
+                x0 = x1;
+                y0 = y1;
+                a0 = a1;
+                x1 = x2;
+                y1 = y2;
+                a1 = a2;
+            }
+
+            pX = x0;
+            pY = y0;
+        }
     private:
-        UnsignedBigInteger modulus;
 
         /**
          * Check modulus compatibility.
