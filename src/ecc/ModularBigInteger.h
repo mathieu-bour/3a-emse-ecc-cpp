@@ -29,6 +29,22 @@ namespace ecc {
             return !(other == *this);
         }
 
+        bool operator<(const ModularBigInteger &other) const {
+            return value < other.value;
+        }
+
+        bool operator>(const ModularBigInteger &other) const {
+            return other < *this;
+        }
+
+        bool operator<=(const ModularBigInteger &other) const {
+            return !(other < *this);
+        }
+
+        bool operator>=(const ModularBigInteger &other) const {
+            return !(*this < other);
+        }
+
         /**
          * Sum two modular integers.
          * @param a
@@ -41,6 +57,18 @@ namespace ecc {
             sum.weakReduction();
             return sum;
         }
+
+        friend ModularBigInteger operator-(const ModularBigInteger &a, const ModularBigInteger &b) {
+            ModularBigInteger difference(a);
+
+            if (a < b) {
+                difference.value += difference.modulus;
+            }
+
+            difference.value -= b.value;
+            return difference;
+        }
+
 
         explicit operator UnsignedBigInteger() {
             return value;
