@@ -1,8 +1,9 @@
 #include "src/ecc/UnsignedBigInteger.h"
-#include "src/ecc/ModularUnsignedBigInteger.h"
+#include "src/ecc/BigInteger.h"
+#include "src/ecc/ModularBigInteger.h"
 
 using ecc::UnsignedBigInteger;
-using ecc::ModularUnsignedBigInteger;
+using ecc::ModularBigInteger;
 
 int main(int argc, char *argv[]) {
 //    std::string aStr = std::string(argv[1]);
@@ -10,8 +11,8 @@ int main(int argc, char *argv[]) {
 //    std::string modStr = std::string(argv[3]);
 //
 //    UnsignedBigInteger mod = UnsignedBigInteger(modStr);
-//    ModularUnsignedBigInteger a = ModularUnsignedBigInteger(aStr, mod);
-//    ModularUnsignedBigInteger b = ModularUnsignedBigInteger(bStr, mod);
+//    ModularBigInteger a = ModularBigInteger(aStr, mod);
+//    ModularBigInteger b = ModularBigInteger(bStr, mod);
 //
 //    std::cout << "A:" << a << std::endl
 //              << "B:" << b << std::endl
@@ -19,7 +20,7 @@ int main(int argc, char *argv[]) {
     UnsignedBigInteger a = UnsignedBigInteger("12");
     UnsignedBigInteger b = UnsignedBigInteger("15");
     UnsignedBigInteger m = UnsignedBigInteger("71");
-    UnsignedBigInteger x, y;
-    ModularUnsignedBigInteger::euclidian(a, b, x, y);
+    ecc::BigInteger x, y;
+    ModularBigInteger::euclidian(a, b, x, y);
     return 0;
 }

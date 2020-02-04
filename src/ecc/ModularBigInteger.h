@@ -1,8 +1,9 @@
-#ifndef INC_3A_ECC_CPP_MODULARUNSIGNEDBIGINTEGER_H
-#define INC_3A_ECC_CPP_MODULARUNSIGNEDBIGINTEGER_H
+#ifndef INC_3A_ECC_CPP_MODULARBIGINTEGER_H
+#define INC_3A_ECC_CPP_MODULARBIGINTEGER_H
 
 #include <map>
 #include "UnsignedBigInteger.h"
+#include "BigInteger.h"
 
 namespace ecc {
     struct MontgomeryCache {
@@ -12,11 +13,11 @@ namespace ecc {
         UnsignedBigInteger r_p;
     };
 
-    class ModularUnsignedBigInteger : public UnsignedBigInteger {
+    class ModularBigInteger : public UnsignedBigInteger {
     public:
         UnsignedBigInteger modulus;
 
-        ModularUnsignedBigInteger(UnsignedBigInteger &source, UnsignedBigInteger &pModulus) {
+        ModularBigInteger(UnsignedBigInteger &source, UnsignedBigInteger &pModulus) {
             digits = source.digits;
             modulus = pModulus;
         }
@@ -27,7 +28,7 @@ namespace ecc {
          * base 10.
          * @param str The big number to instantiate (base 10).
          */
-        ModularUnsignedBigInteger(const std::string &str, const UnsignedBigInteger &pModulus) {
+        ModularBigInteger(const std::string &str, const UnsignedBigInteger &pModulus) {
             modulus = pModulus;
             std::istringstream inputStringStream(str);
 
@@ -45,7 +46,7 @@ namespace ecc {
          * @param other The other big integer to add.
          * @return The sum big integer reference.
          */
-        ModularUnsignedBigInteger &operator+=(const ModularUnsignedBigInteger &other) {
+        ModularBigInteger &operator+=(const ModularBigInteger &other) {
             checkModulus(other); // Check modulus compatibility
             UnsignedBigInteger::operator+=(other);
             weakReduction();
@@ -58,42 +59,50 @@ namespace ecc {
          * @param other
          * @return
          */
-        friend ModularUnsignedBigInteger operator*(ModularUnsignedBigInteger a, const ModularUnsignedBigInteger &b) {
+        friend ModularBigInteger operator*(ModularBigInteger a, const ModularBigInteger &b) {
 
         }
 
-        static void euclidian(
-            const UnsignedBigInteger &a,
-            const UnsignedBigInteger &b,
-            UnsignedBigInteger &pX,
-            UnsignedBigInteger &pY
+        static UnsignedBigInteger euclidian(
+                const UnsignedBigInteger &a,
+                const UnsignedBigInteger &b,
+                BigInteger &pX,
+                BigInteger &pY
         ) {
-            UnsignedBigInteger x0 = 1, y0 = 0, a0 = a;
-            UnsignedBigInteger x1 = 0, y1 = 1, a1 = b;
+            BigInteger x1 = 1, y1 = 0;
+            UnsignedBigInteger a1 = a;
+            BigInteger x2 = 0, y2 = 1;
+            UnsignedBigInteger a2 = b;
 
-            while (a1 != 0) {
-                UnsignedBigInteger q = a0 / a1;
-                UnsignedBigInteger a2 = a0 - q * a1;
-                UnsignedBigInteger x2 = x0 - q * x1;
-                UnsignedBigInteger y2 = y0 - q * y1;
-                x0 = x1;
-                y0 = y1;
-                a0 = a1;
+            while (a2 != 0) {
+                BigInteger x0 = x1;
+                BigInteger y0 = y1;
+                UnsignedBigInteger a0 = a1;
                 x1 = x2;
                 y1 = y2;
                 a1 = a2;
+
+                UnsignedBigInteger q = a0 / a1;
+                a2 = a0 - q * a1;
+                if (a2 == 0)
+                    break;
+
+                x2 = x0 - BigInteger(q) * x1;
+                y2 = y0 - BigInteger(q) * y1;
             }
 
-            pX = x0;
-            pY = y0;
+            pX = x1;
+            pY = y1;
+            return a1; // the GCD
         }
+
     private:
 
         /**
          * Check modulus compatibility.
          * @param other
          */
-        void checkModulus(const ModularUnsignedBigInteger &other) {
+        void checkModulus(const ModularBigInteger &other) {
             if (modulus != other.modulus) {
             }
         }
@@ -106,4 +115,4 @@ namespace ecc {
         }
     };
 }
-#endif //INC_3A_ECC_CPP_MODULARUNSIGNEDBIGINTEGER_H
+#endif //INC_3A_ECC_CPP_MODULARBIGINTEGER_H

@@ -2,6 +2,7 @@
 #define INC_3A_ECC_CPP_UNSIGNEDBIGINTEGER_H
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 #include <iostream>
 #include <stdexcept>
@@ -23,13 +24,14 @@ namespace ecc {
     public:
         typedef std::uint32_t Digit;
         typedef std::uint64_t Digit64;
+        typedef std::vector<Digit> Digits;
         static const unsigned BITS = 32;
 
         /**
          * The unsigned big integer digits. Each is a 32-bits unsigned integer and may support up to 2^32 values.
          * Thus, the size of `digits` is optimized. The first "digit" is the lowest-order bits.
          */
-        std::vector<Digit> digits;
+        Digits digits;
 
         /**
          * Default constructor with a single 32-bits digit. By default, if no args were given, it is initialized to
@@ -37,6 +39,8 @@ namespace ecc {
          * @param digit The 32-bits digit.
          */
         UnsignedBigInteger(Digit digit = 0) : digits(1, digit) {}
+
+        UnsignedBigInteger(Digits pDigits) : digits(std::move(pDigits)) {}
 
         /**
          * Default copy constructor, which basically copies the digits.
@@ -67,10 +71,7 @@ namespace ecc {
          * @param other The other reference.
          * @return this
          */
-        UnsignedBigInteger &operator=(const UnsignedBigInteger &other) {
-            digits = other.digits;
-            return *this;
-        }
+        UnsignedBigInteger &operator=(const UnsignedBigInteger &other) = default;
 
         /**
          * Direct increment operator. Uses the reference increment operator.
