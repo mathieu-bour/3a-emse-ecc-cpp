@@ -1,14 +1,15 @@
 #ifndef INC_3A_ECC_CPP_UNSIGNEDBIGINTEGER_H
 #define INC_3A_ECC_CPP_UNSIGNEDBIGINTEGER_H
 
+#include <algorithm>
+#include <cctype>
 #include <cstdint>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <utility>
 #include <vector>
-#include <iostream>
-#include <stdexcept>
-#include <algorithm>
-#include <sstream>
-#include <cctype>
+#include "ECCTypes.h"
 
 using std::size_t;
 
@@ -22,9 +23,6 @@ namespace ecc {
      */
     class UnsignedBigInteger {
     public:
-        typedef std::uint32_t Digit;
-        typedef std::uint64_t Digit64;
-        typedef std::vector<Digit> Digits;
         static const unsigned BITS = 32;
 
         /**
@@ -72,6 +70,11 @@ namespace ecc {
          * @return this
          */
         UnsignedBigInteger &operator=(const UnsignedBigInteger &other) = default;
+
+        UnsignedBigInteger &operator=(const std::string &str) {
+            *this = UnsignedBigInteger(str);
+            return *this;
+        };
 
         /**
          * Direct increment operator. Uses the reference increment operator.

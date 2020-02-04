@@ -1,0 +1,15 @@
+name: Tests
+on: push
+jobs:
+  tests:
+    name: Run tests with Google Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build tests executable
+        run: |
+          cmake -B./cmake-build-debug -H./
+          cmake --build cmake-build-debug/ --target 3a_ecc_cpp_tests
+      - name: Run tests executable
+        run: ./cmake-build-debug/3a_ecc_cpp_tests

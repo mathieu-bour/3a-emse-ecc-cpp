@@ -1,117 +1,84 @@
 #ifndef INC_3A_ECC_CPP_MODULARBIGINTEGER_H
 #define INC_3A_ECC_CPP_MODULARBIGINTEGER_H
 
-#include <map>
+#include "ECCTypes.h"
 #include "UnsignedBigInteger.h"
 #include "BigInteger.h"
 
 namespace ecc {
-    struct MontgomeryCache {
-        size_t k = 0;
-        UnsignedBigInteger n_p;
-        UnsignedBigInteger r;
-        UnsignedBigInteger r_p;
-    };
-
-    class ModularBigInteger : public UnsignedBigInteger {
+    class ModularBigInteger {
     public:
+        UnsignedBigInteger value;
         UnsignedBigInteger modulus;
 
-        ModularBigInteger(UnsignedBigInteger &source, UnsignedBigInteger &pModulus) {
-            digits = source.digits;
+        ModularBigInteger(UnsignedBigInteger &pValue, UnsignedBigInteger &pModulus) {
             modulus = pModulus;
+            value = pValue % modulus;
+        }
+
+        ModularBigInteger(const std::string &pValue, const std::string &pModulus) {
+            modulus = UnsignedBigInteger(pModulus);
+            value = UnsignedBigInteger(pValue) % modulus; // Hard reduction
+        }
+
+        bool operator==(const ModularBigInteger &other) const {
+            return value == other.value && modulus == other.modulus;
+        }
+
+        bool operator!=(const ModularBigInteger &other) const {
+            return !(other == *this);
         }
 
         /**
-         * From string constructor.
-         * This is the most important one, which allow to initialize very big numbers from a string based number in
-         * base 10.
-         * @param str The big number to instantiate (base 10).
-         */
-        ModularBigInteger(const std::string &str, const UnsignedBigInteger &pModulus) {
-            modulus = pModulus;
-            std::istringstream inputStringStream(str);
-
-            inputStringStream >> *this; // see std::istream &operator>>
-
-            if (inputStringStream.fail() || !inputStringStream.eof()) {
-                throw std::runtime_error("Error: UnsignedBigInteger::string");
-            }
-
-            weakReduction();
-        }
-
-        /**
-         * Addition assignment operator.
-         * @param other The other big integer to add.
-         * @return The sum big integer reference.
-         */
-        ModularBigInteger &operator+=(const ModularBigInteger &other) {
-            checkModulus(other); // Check modulus compatibility
-            UnsignedBigInteger::operator+=(other);
-            weakReduction();
-
-            return *this;
-        }
-
-        /**
-         * Implementation of the Montgomery multiplication
-         * @param other
+         * Sum two modular integers.
+         * @param a
+         * @param b
          * @return
          */
-        friend ModularBigInteger operator*(ModularBigInteger a, const ModularBigInteger &b) {
+        friend ModularBigInteger operator+(const ModularBigInteger &a, const ModularBigInteger &b) {
+            ModularBigInteger sum(a);
+            sum.value += b.value;
+            sum.weakReduction();
+            return sum;
+        }
 
+        explicit operator UnsignedBigInteger() {
+            return value;
         }
 
         static UnsignedBigInteger euclidian(
                 const UnsignedBigInteger &a,
                 const UnsignedBigInteger &b,
-                BigInteger &pX,
-                BigInteger &pY
+                BigInteger &x,
+                BigInteger &y
         ) {
-            BigInteger x1 = 1, y1 = 0;
-            UnsignedBigInteger a1 = a;
-            BigInteger x2 = 0, y2 = 1;
-            UnsignedBigInteger a2 = b;
-
-            while (a2 != 0) {
-                BigInteger x0 = x1;
-                BigInteger y0 = y1;
-                UnsignedBigInteger a0 = a1;
-                x1 = x2;
-                y1 = y2;
-                a1 = a2;
-
-                UnsignedBigInteger q = a0 / a1;
-                a2 = a0 - q * a1;
-                if (a2 == 0)
-                    break;
-
-                x2 = x0 - BigInteger(q) * x1;
-                y2 = y0 - BigInteger(q) * y1;
+            // Base Case
+            if (a == 0) {
+                x = 0;
+                y = 1;
+                return b;
             }
 
-            pX = x1;
-            pY = y1;
-            return a1; // the GCD
+            BigInteger x1, y1; // To store results of recursive call
+            UnsignedBigInteger gcd = euclidian(b % a, a, x1, y1);
+
+            // Update x and y using results of
+            // recursive call
+            BigInteger b_a = BigInteger(b / a);
+            x = y1 - b_a * x1;
+            y = x1;
+
+            return gcd;
         }
 
     private:
-
         /**
-         * Check modulus compatibility.
-         * @param other
-         */
-        void checkModulus(const ModularBigInteger &other) {
-            if (modulus != other.modulus) {
-            }
-        }
-
-        /**
-         * Reduce the number against their modulus (slow).
+         * Weakly reduce the number, assuming there is only 1 overflow
          */
         void weakReduction() {
-            *this %= modulus;
+            if (value >= modulus) {
+                value -= modulus;
+            }
         }
     };
 }
