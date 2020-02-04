@@ -7,6 +7,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Install Google Test
+        run: |
+          sudo apt-get install -y libgtest-dev
+          cd /usr/src/gtest
+          sudo cmake CMakeLists.txt
+          sudo make
+          sudo cp *.a /usr/lib
       - name: Build tests executable
         run: |
           cmake -B./cmake-build-debug -H./
