@@ -48,3 +48,14 @@ TEST(BigIntegerTest, subtraction) {
     c = "-127683287152408257498248902210445593877732630554275";
     EXPECT_EQ(c, a - b);
 }
+
+TEST(BigInteger, euclidean) {
+    BigInteger one(1);
+    BigInteger a, b, x, y, gcd;
+    a = "13";
+    b = "17";
+
+    gcd = BigInteger::euclidean(a, b, x, y);
+    EXPECT_EQ(one, gcd);
+    EXPECT_EQ(one, a * x + b * y);
+}

@@ -16,9 +16,7 @@ namespace ecc {
         }
 
         BigInteger(Digit digit = 0) {
-            if (digit == 0) {
-                sign = 0;
-            }
+            sign = digit == 0 ? 0 : 1;
 
             value = UnsignedBigInteger(digit);
         }
@@ -48,8 +46,24 @@ namespace ecc {
             return value;
         }
 
+        /**
+         * Equality operator with a unsigned 32 bits integer.
+         * @param digit
+         * @return
+         */
         bool operator==(Digit digit) const {
             return value == digit;
+        }
+
+
+        bool operator==(const int &integer) {
+            if (integer == 0) {
+                return sign == 0 && value == 0;
+            } else if (integer > 0) {
+                return sign == 1 && value == integer;
+            } else {
+                return sign == -1 && value == -integer;
+            }
         }
 
         bool operator==(const BigInteger &other) const {
@@ -63,6 +77,7 @@ namespace ecc {
         BigInteger &operator=(const BigInteger &other) {
             sign = other.sign;
             value = other.value;
+            return *this;
         }
 
 
@@ -160,6 +175,30 @@ namespace ecc {
             return product;
         }
 
+        BigInteger operator/=(const BigInteger &other) {
+            sign *= other.sign;
+            value /= other.value;
+            return *this;
+        }
+
+        friend BigInteger operator/(const BigInteger &a, const BigInteger &b) {
+            BigInteger quotient(a);
+            quotient /= b;
+            return quotient;
+        }
+
+        BigInteger operator%=(const BigInteger &other) {
+            value %= other.value;
+            sign = value == 0 ? 0 : 1;
+            return *this;
+        }
+
+        friend BigInteger operator%(const BigInteger &a, const BigInteger &b) {
+            BigInteger reminder(a);
+            reminder %= b;
+            return reminder;
+        }
+
         [[nodiscard]] std::string to_string() {
             std::string res;
 
@@ -200,6 +239,25 @@ namespace ecc {
         friend std::ostream &operator<<(std::ostream &os, BigInteger &u) {
             os << u.to_string();
             return os;
+        }
+
+        static BigInteger euclidean(BigInteger a, BigInteger b, BigInteger &x, BigInteger &y) {
+            // Base Case
+            if (a == 0) {
+                x = 0;
+                y = 1;
+                return b;
+            }
+
+            BigInteger x1, y1; // To store results of recursive call
+            BigInteger gcd = euclidean(b % a, a, x1, y1);
+
+            // Update x and y using results of
+            // recursive call
+            x = y1 - (b / a) * x1;
+            y = x1;
+
+            return gcd;
         }
 
     private:

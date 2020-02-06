@@ -1,9 +1,11 @@
 #include "gtest/gtest.h"
+#include "../../src/ecc/BigInteger.h"
 #include "../../src/ecc/ModularBigInteger.h"
 
 using ecc::UnsignedBigInteger;
 using ecc::BigInteger;
 using ecc::ModularBigInteger;
+
 
 TEST(ModularBigInteger, addition) {
     ModularBigInteger a("12", "23");
@@ -33,16 +35,4 @@ TEST(ModularBigInteger, subtraction) {
     c = ModularBigInteger("16339586990237931274356700540975382447716018233674",
                           "16589398644410362140098972598872168730834157521659");
     EXPECT_EQ(c, a - b);
-}
-
-TEST(ModularBigInteger, euclidian) {
-    ModularBigInteger a_m("12", "23");
-    ModularBigInteger b_m("17", "23");
-    BigInteger a = BigInteger(a_m.value);
-    BigInteger b = BigInteger(b_m.value);
-    BigInteger x, y;
-    UnsignedBigInteger gcd;
-
-    ModularBigInteger::euclidian(a_m, b_m, x, y, gcd);
-    EXPECT_EQ(BigInteger("1"), a * x + b * y);
 }

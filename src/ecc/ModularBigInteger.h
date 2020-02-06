@@ -74,55 +74,6 @@ namespace ecc {
             return value;
         }
 
-        static void euclidian(
-                const ModularBigInteger &a,
-                const ModularBigInteger &b,
-                BigInteger &pX,
-                BigInteger &pY,
-                UnsignedBigInteger &gcd
-        ) {
-            euclidian(a.value, b.value, pX, pY, gcd);
-        }
-
-        static void euclidian(
-                const UnsignedBigInteger &a,
-                const UnsignedBigInteger &b,
-                BigInteger &pX,
-                BigInteger &pY,
-                UnsignedBigInteger &gcd
-        ) {
-            BigInteger x0 = 1, y0 = 0;
-            UnsignedBigInteger a0 = a;
-            BigInteger x1 = 0, y1 = 1;
-            UnsignedBigInteger a1 = b;
-
-            while (a1 != 0) {
-                UnsignedBigInteger q = a0 / a1;
-                UnsignedBigInteger a2 = a0 - q * a1;
-                if (a2 == 0) {
-                    x0 = x1;
-                    y0 = y1;
-                    a0 = a1;
-                    break;
-                }
-
-                BigInteger q2 = BigInteger(q);
-                BigInteger x2 = x0 - q2 * x1;
-                BigInteger y2 = y0 - q2 * y1;
-
-                x0 = x1;
-                y0 = y1;
-                a0 = a1;
-                x1 = x2;
-                y1 = y2;
-                a1 = a2;
-            }
-
-            pX = x0;
-            pY = y0;
-            gcd = a0;
-        }
-
     private:
         /**
          * Weakly reduce the number, assuming there is only 1 overflow
