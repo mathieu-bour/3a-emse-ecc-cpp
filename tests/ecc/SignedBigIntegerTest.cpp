@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
-#include "../../src/ecc/BigInteger.h"
+#include "../../includes/ecc/SignedBigInteger.h"
 
-using ecc::BigInteger;
+using ecc::SignedBigInteger;
 
 TEST(BigIntegerTest, addition) {
-    BigInteger a, b, c;
+    SignedBigInteger a, b, c;
     a = "12";
     b = "13";
     c = "25";
@@ -32,7 +32,7 @@ TEST(BigIntegerTest, addition) {
 }
 
 TEST(BigIntegerTest, subtraction) {
-    BigInteger a, b, c;
+    SignedBigInteger a, b, c;
     a = "12";
     b = "18";
     c = "-6";
@@ -50,12 +50,19 @@ TEST(BigIntegerTest, subtraction) {
 }
 
 TEST(BigInteger, euclidean) {
-    BigInteger one(1);
-    BigInteger a, b, x, y, gcd;
+    SignedBigInteger one(1);
+    SignedBigInteger a, b, x, y, gcd;
     a = "13";
     b = "17";
 
-    gcd = BigInteger::euclidean(a, b, x, y);
+    gcd = SignedBigInteger::euclidean(a, b, x, y);
+    EXPECT_EQ(one, gcd);
+    EXPECT_EQ(one, a * x + b * y);
+
+    a = "83843900390206711415712416206870715288509784875087";
+    b = "99859575698902743954011617069715832597925882151633";
+
+    gcd = SignedBigInteger::euclidean(a, b, x, y);
     EXPECT_EQ(one, gcd);
     EXPECT_EQ(one, a * x + b * y);
 }

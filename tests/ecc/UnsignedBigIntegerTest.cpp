@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../../src/ecc/UnsignedBigInteger.h"
+#include "../../includes/ecc/UnsignedBigInteger.h"
 
 using ecc::UnsignedBigInteger;
 

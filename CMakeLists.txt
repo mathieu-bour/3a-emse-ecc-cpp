@@ -4,16 +4,27 @@ project(3a_ecc_cpp)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(3a_ecc_cpp
-        main.cpp
-        src/ecc/UnsignedBigInteger.h
-        src/ecc/BigInteger.h
-        src/ecc/ModularBigInteger.h
-        src/ecc/ECCTypes.h
-        )
+        includes/ecc/ECCTypes.h
+        includes/ecc/UnsignedBigInteger.h
+        includes/ecc/SignedBigInteger.h
+        includes/ecc/ModularBigInteger.h
+        src/ecc/ModularBigInteger.cpp
+        src/ecc/SignedBigInteger.cpp
+        src/ecc/UnsignedBigInteger.cpp
+        main.cpp src/ecc/Montgomery.cpp includes/ecc/Montgomery.h)
 
 add_executable(3a_ecc_cpp_tests
+        includes/ecc/ECCTypes.h
+        includes/ecc/UnsignedBigInteger.h
+        includes/ecc/SignedBigInteger.h
+        includes/ecc/ModularBigInteger.h
+        includes/ecc/Montgomery.h
+        src/ecc/UnsignedBigInteger.cpp
+        src/ecc/SignedBigInteger.cpp
+        src/ecc/ModularBigInteger.cpp
+        src/ecc/Montgomery.cpp
         tests/ecc/UnsignedBigIntegerTest.cpp
-        tests/ecc/BigIntegerTest.cpp
+        tests/ecc/SignedBigIntegerTest.cpp
         tests/ecc/ModularBigIntegerTest.cpp
-        )
+        tests/ecc/MontgomeryTest.cpp)
 target_link_libraries(3a_ecc_cpp_tests gtest gtest_main pthread)
