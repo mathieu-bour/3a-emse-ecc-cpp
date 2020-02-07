@@ -38,36 +38,21 @@ TEST(ModularBigInteger, subtraction) {
     EXPECT_EQ(c, a - b);
 }
 
+TEST(ModularBigInteger, multplication) {
+    ModularBigInteger a("15", "101");
+    ModularBigInteger b("78", "101");
+    ModularBigInteger c("59", "101");
+//    EXPECT_EQ(c, a * b);
+//
+//    a.modulus = b.modulus = c.modulus = "48302719417429676373373082596797047824218928789657";
+//    a.value = "8336372878937308259679704782421890271941742967657";
+//    b.value = "3984889828386848004809373789390397393937938937903";
+//    c.value = "41595515557066660636620096868365847727884034972595";
+//    EXPECT_EQ(c, a * b);
 
-TEST(ModularBigInteger, computeMontgomeryParams) {
-    ModularBigInteger a("12", "23");
-    a.computeMontgomeryParams();
-
-    EXPECT_EQ(UnsignedBigInteger("32"), a.r);
-    EXPECT_EQ(UnsignedBigInteger("1"), a.r * a.invR - a.modulus * a.invModulus);
-}
-
-
-TEST(ModularBigInteger, montgomeryReduce) {
-    ModularBigInteger a("12", "23");
-    UnsignedBigInteger ap("16");
-    EXPECT_EQ(ap, a.montgomeryReduce());
-
-
-    ModularBigInteger b("17", "23");
-    UnsignedBigInteger bp("15");
-    EXPECT_EQ(bp, b.montgomeryReduce());
-
-    ModularBigInteger c("3", "5");
-    UnsignedBigInteger cp("4");
-    EXPECT_EQ(cp, c.montgomeryReduce());
-}
-
-
-TEST(ModularBigInteger, multiplication) {
-    ModularBigInteger a("3", "5");
-    ModularBigInteger b("3", "5");
-    ModularBigInteger c = a * b;
-
-    EXPECT_EQ(UnsignedBigInteger("9"), c.value);
+    a.modulus = b.modulus = c.modulus = "10782148755896283475495548862133433546436570882721";
+    a.value = "8730825963637287893941742967657970478242189027137";
+    b.value = "3984832838684800479389379089880937378939039739393";
+    c.value = "3027429495029888573836989950937185745280723518817";
+    EXPECT_EQ(c, a * b);
 }

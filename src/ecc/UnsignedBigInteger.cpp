@@ -557,14 +557,6 @@ size_t UnsignedBigInteger::getMostSignificantBitIndex() const {
     return (digits.size() - 1) * BITS + 1 + d;
 }
 
-
-uint8_t UnsignedBigInteger::getBit(size_t bitIndex) {
-    size_t blockIndex = bitIndex / BITS;
-    uint8_t blockBitIndex = bitIndex % BITS;
-    return (digits[blockIndex] >> blockBitIndex) & 1;
-}
-
-
 std::string UnsignedBigInteger::to_string() const {
     std::ostringstream outputStringStream;
     UnsignedBigInteger quotient(*this), reminder;

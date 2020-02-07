@@ -1,4 +1,5 @@
 #include "../../includes/ecc/ModularBigInteger.h"
+#include "../../includes/ecc/Montgomery.h"
 
 using namespace ecc;
 
@@ -38,73 +39,15 @@ ModularBigInteger &ModularBigInteger::operator-=(const ModularBigInteger &delta)
 }
 
 
-ModularBigInteger ModularBigInteger::operator*(const ModularBigInteger &other) {
+ModularBigInteger ModularBigInteger::operator*(const ModularBigInteger &other) const {
     ModularBigInteger product(*this);
     product *= other;
 
     return product;
 }
 
-
 ModularBigInteger &ModularBigInteger::operator*=(const ModularBigInteger &other) {
-    value = montgomeryMultiplication(other);
-
+    Montgomery montgomery(modulus);
+    value = montgomery.multiplication(value, other.value);
     return *this;
-}
-
-
-void ModularBigInteger::computeMontgomeryParams() {
-    if (invR != 0) {
-        return;
-    }
-
-    r = 1;
-    r <<= modulus.getMostSignificantBitIndex();
-    SignedBigInteger signedInvR, signedInvModulus;
-    SignedBigInteger::euclidean(r, modulus, signedInvR, signedInvModulus);
-
-    invR = signedInvR.value;
-    invModulus = signedInvModulus.value;
-}
-
-
-UnsignedBigInteger ModularBigInteger::montgomeryReduce() {
-    computeMontgomeryParams();
-
-    UnsignedBigInteger q = modR(modR(value) * invModulus);
-    SignedBigInteger a = divR(SignedBigInteger(value) - q * modulus);
-
-    if (a.isNegative()) {
-        a += modulus;
-    }
-
-    return a.value;
-}
-
-
-UnsignedBigInteger ModularBigInteger::montgomeryMultiplication(ModularBigInteger other) {
-    ModularBigInteger o("1", modulus.to_string());
-
-    UnsignedBigInteger ap = montgomeryReduce();
-    UnsignedBigInteger bp = other.montgomeryReduce();
-
-    UnsignedBigInteger x = ap * bp;
-    UnsignedBigInteger s = modR(modR(x) * invModulus);
-    SignedBigInteger t = divR(x + s * modulus);
-
-    if (t.value < modulus) {
-        return t.value;
-    } else {
-        return t.value - modulus;
-    }
-}
-
-
-UnsignedBigInteger ModularBigInteger::modR(const UnsignedBigInteger &in) const {
-    return in & UnsignedBigInteger(r - 1);
-}
-
-
-SignedBigInteger ModularBigInteger::divR(const SignedBigInteger &in) const {
-    return in >> r.getMostSignificantBitIndex();
 }

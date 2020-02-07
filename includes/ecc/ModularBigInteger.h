@@ -14,8 +14,10 @@ namespace ecc {
         UnsignedBigInteger invR;
         UnsignedBigInteger invModulus;
 
+        ModularBigInteger() : value(0), modulus(1) {}
 
-        ModularBigInteger(UnsignedBigInteger &pValue, UnsignedBigInteger &pModulus) {
+
+        ModularBigInteger(const UnsignedBigInteger &pValue, const UnsignedBigInteger &pModulus) {
             modulus = pModulus;
             value = pValue % modulus;
         }
@@ -94,7 +96,7 @@ namespace ecc {
          * @param other The other modular big integer to multiply.
          * @return The modular big integer product.
          */
-        ModularBigInteger operator*(const ModularBigInteger &other);
+        ModularBigInteger operator*(const ModularBigInteger &other) const;
 
 
         /**
@@ -103,21 +105,6 @@ namespace ecc {
          * @return The modular big integer product reference.
          */
         ModularBigInteger &operator*=(const ModularBigInteger &other);
-
-
-        UnsignedBigInteger montgomeryReduce();
-
-
-        UnsignedBigInteger montgomeryMultiplication(ModularBigInteger other);
-
-
-        void computeMontgomeryParams();
-
-
-        UnsignedBigInteger modR(const UnsignedBigInteger &in) const;
-
-
-        SignedBigInteger divR(const SignedBigInteger &in) const;
 
     private:
 

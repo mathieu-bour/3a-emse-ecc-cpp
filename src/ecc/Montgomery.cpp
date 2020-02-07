@@ -1,5 +1,4 @@
 #include "../../includes/ecc/Montgomery.h"
-#include "../../includes/ecc/SignedBigInteger.h"
 
 using namespace ecc;
 
@@ -11,7 +10,7 @@ Montgomery::Montgomery(const UnsignedBigInteger &pModulus) {
     invR = knuthModularInverse(r, modulus);
     invN = knuthModularInverse(modulus, r);
     invN = (r + r - invN) % r;
-    r2modN = r * r % modulus;
+    r2modN = r * r % modulus; // Precompute r² mod modulus
 }
 
 

@@ -19,10 +19,14 @@ add_executable(3a_ecc_cpp_tests
         includes/ecc/SignedBigInteger.h
         includes/ecc/ModularBigInteger.h
         includes/ecc/Montgomery.h
+        includes/ecc/Point.h
+        includes/ecc/P256.h
         src/ecc/UnsignedBigInteger.cpp
         src/ecc/SignedBigInteger.cpp
         src/ecc/ModularBigInteger.cpp
         src/ecc/Montgomery.cpp
+        src/ecc/Point.cpp
+        src/ecc/P256.cpp
         tests/ecc/UnsignedBigIntegerTest.cpp
         tests/ecc/SignedBigIntegerTest.cpp
         tests/ecc/ModularBigIntegerTest.cpp
