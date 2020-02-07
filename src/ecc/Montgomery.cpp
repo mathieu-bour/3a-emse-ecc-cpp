@@ -1,4 +1,5 @@
 #include "../../includes/ecc/Montgomery.h"
+#include "../../includes/ecc/SignedBigInteger.h"
 
 using namespace ecc;
 
@@ -6,69 +7,56 @@ using namespace ecc;
 Montgomery::Montgomery(const UnsignedBigInteger &pModulus) {
     modulus = pModulus;
     reducerBits = pModulus.getMostSignificantBitIndex();
-    reducer = UnsignedBigInteger(1) << reducerBits;
-    mask = reducer - 1;
-    reciprocal = Montgomery::knuthModularInverse(reducer);
-    factor = (reducer * (reciprocal % modulus) - 1) / modulus;
-    one = reducer % modulus;
-    r2 = (reducer * reducer) % modulus;
+    r = UnsignedBigInteger(1) << reducerBits;
+    invR = knuthModularInverse(r, modulus);
+    invN = knuthModularInverse(modulus, r);
+    invN = (r + r - invN) % r;
+    r2modN = r * r % modulus;
 }
 
 
-UnsignedBigInteger Montgomery::reduceRef(const UnsignedBigInteger &x) const {
-    return (x << reducerBits) % modulus;
+UnsignedBigInteger Montgomery::montgomeryRef(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const {
+    return (a * b * invR) % modulus;
 }
 
+UnsignedBigInteger Montgomery::montgomery(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const {
+    UnsignedBigInteger T = a * b;
+    UnsignedBigInteger m = modR(modR(T) * invN);
+    UnsignedBigInteger t = divR(T + m * modulus);
 
-UnsignedBigInteger Montgomery::reduceWiki(const UnsignedBigInteger &T) const {
-    UnsignedBigInteger ni = reducer - reciprocal;
-    UnsignedBigInteger m = ((T % reducer) * ni) % reducer;
-    UnsignedBigInteger x = (T + m * modulus) / reducer;
-
-    if (x < modulus) {
-        return x;
+    if (t >= modulus) {
+        return t - modulus;
     } else {
-        return x - modulus;
+        return t;
     }
 }
 
-
-UnsignedBigInteger Montgomery::multiply(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const {
-    UnsignedBigInteger A = reduceRef(a);
-    UnsignedBigInteger B = reduceRef(b);
-    UnsignedBigInteger product = A * B;
-    UnsignedBigInteger t = ((product & mask) * factor) & mask;
-    UnsignedBigInteger red = (product + t * modulus) >> reducerBits;
-    UnsignedBigInteger result;
-
-    if (red < modulus) {
-        result = red;
-    } else {
-        result = red - modulus;
-    }
-
-    return (result * reciprocal) % modulus;
+UnsignedBigInteger Montgomery::multiplication(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const {
+    UnsignedBigInteger phyA = montgomery(a, r2modN);
+    UnsignedBigInteger phyB = montgomery(b, r2modN);
+    UnsignedBigInteger phyC = montgomery(phyA, phyB);
+    UnsignedBigInteger c = montgomery(phyC, 1);
+    return c;
 }
-
 
 UnsignedBigInteger Montgomery::modR(const UnsignedBigInteger &in) const {
-    return in & UnsignedBigInteger(reducer - 1);
+    return in & UnsignedBigInteger(r - 1);
 }
 
 
 UnsignedBigInteger Montgomery::divR(const UnsignedBigInteger &in) const {
-    return in >> (reducer.getMostSignificantBitIndex() + 1);
+    return in >> (r.getMostSignificantBitIndex() - 1);
 }
 
 
-UnsignedBigInteger Montgomery::knuthModularInverse(const UnsignedBigInteger &in) const {
+UnsignedBigInteger Montgomery::knuthModularInverse(const UnsignedBigInteger &in, const UnsignedBigInteger &mod) {
     UnsignedBigInteger inv, u1, u3, v1, v3, t1, t3, q;
     int iter;
     /* Step X1. Initialise */
     u1 = 1;
     u3 = in;
     v1 = 0;
-    v3 = modulus;
+    v3 = mod;
     /* Remember odd/even iterations */
     iter = 1;
     /* Step X2. Loop while v3 != 0 */
@@ -89,7 +77,7 @@ UnsignedBigInteger Montgomery::knuthModularInverse(const UnsignedBigInteger &in)
         return 0;   /* Error: No inverse exists */
     /* Ensure a positive result */
     if (iter < 0)
-        inv = modulus - u1;
+        inv = mod - u1;
     else
         inv = u1;
     return inv;

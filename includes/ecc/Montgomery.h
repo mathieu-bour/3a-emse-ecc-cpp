@@ -12,32 +12,24 @@ namespace ecc {
     public:
         UnsignedBigInteger modulus;
         size_t reducerBits;
-        UnsignedBigInteger reducer;
-        UnsignedBigInteger mask;
-        UnsignedBigInteger reciprocal;
-        UnsignedBigInteger invMod;
-        UnsignedBigInteger factor;
-        UnsignedBigInteger one;
-        UnsignedBigInteger r2;
-
+        UnsignedBigInteger r;
+        UnsignedBigInteger invR;
+        UnsignedBigInteger invN;
+        UnsignedBigInteger r2modN;
 
         Montgomery(const UnsignedBigInteger &pModulus);
 
+        UnsignedBigInteger montgomeryRef(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const;
 
-        UnsignedBigInteger reduceRef(const UnsignedBigInteger &in) const;
-        UnsignedBigInteger reduceWiki(const UnsignedBigInteger &T) const;
-
-
-        UnsignedBigInteger multiply(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const;
-
-
-        UnsignedBigInteger knuthModularInverse(const UnsignedBigInteger &in) const;
-
+        UnsignedBigInteger montgomery(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const;
 
         UnsignedBigInteger modR(const UnsignedBigInteger &in) const;
 
-
         UnsignedBigInteger divR(const UnsignedBigInteger &in) const;
+
+        static UnsignedBigInteger knuthModularInverse(const UnsignedBigInteger &in, const UnsignedBigInteger &mod);
+
+        UnsignedBigInteger multiplication(const UnsignedBigInteger &a, const UnsignedBigInteger &b) const;
     };
 }
 
